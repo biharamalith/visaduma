@@ -1,0 +1,214 @@
+{
+  "@@locale": "en",
+  "@@last_modified": "2026-03-02",
+
+  "appName": "VisaDuma",
+  "@appName": { "description": "The name of the application." },
+
+  "appTagline": "Sri Lanka's Super Service App",
+  "@appTagline": { "description": "Short descriptor shown on splash / marketing screens." },
+
+  "selectLanguage": "Select Your Language",
+  "@selectLanguage": { "description": "Heading on the language selection screen." },
+
+  "selectLanguageSubtitle": "Choose the language you are most comfortable with",
+  "@selectLanguageSubtitle": {},
+
+  "continueButton": "Continue",
+  "@continueButton": {},
+
+  "english": "English",
+  "@english": {},
+
+  "sinhala": "සිංහල",
+  "@sinhala": {},
+
+  "tamil": "தமிழ்",
+  "@tamil": {},
+
+  "getStarted": "Get Started",
+  "@getStarted": {},
+
+  "login": "Log In",
+  "@login": {},
+
+  "register": "Register",
+  "@register": {},
+
+  "email": "Email",
+  "@email": {},
+
+  "password": "Password",
+  "@password": {},
+
+  "confirmPassword": "Confirm Password",
+  "@confirmPassword": {},
+
+  "fullName": "Full Name",
+  "@fullName": {},
+
+  "phoneNumber": "Phone Number",
+  "@phoneNumber": {},
+
+  "forgotPassword": "Forgot Password?",
+  "@forgotPassword": {},
+
+  "dontHaveAccount": "Don't have an account?",
+  "@dontHaveAccount": {},
+
+  "alreadyHaveAccount": "Already have an account?",
+  "@alreadyHaveAccount": {},
+
+  "home": "Home",
+  "@home": {},
+
+  "services": "Services",
+  "@services": {},
+
+  "bookings": "Bookings",
+  "@bookings": {},
+
+  "profile": "Profile",
+  "@profile": {},
+
+  "notifications": "Notifications",
+  "@notifications": {},
+
+  "chat": "Chat",
+  "@chat": {},
+
+  "rides": "Rides",
+  "@rides": {},
+
+  "shops": "Shops",
+  "@shops": {},
+
+  "vehicles": "Vehicles",
+  "@vehicles": {},
+
+  "jobs": "Jobs",
+  "@jobs": {},
+
+  "boarding": "Boarding",
+  "@boarding": {},
+
+  "reviews": "Reviews",
+  "@reviews": {},
+
+  "searchServices": "Search services…",
+  "@searchServices": {},
+
+  "searchShops": "Search shops…",
+  "@searchShops": {},
+
+  "allCategories": "All Categories",
+  "@allCategories": {},
+
+  "nearbyProviders": "Nearby Providers",
+  "@nearbyProviders": {},
+
+  "topRated": "Top Rated",
+  "@topRated": {},
+
+  "bookNow": "Book Now",
+  "@bookNow": {},
+
+  "viewAll": "View All",
+  "@viewAll": {},
+
+  "loading": "Loading…",
+  "@loading": {},
+
+  "error": "Something went wrong",
+  "@error": {},
+
+  "retry": "Retry",
+  "@retry": {},
+
+  "noInternetTitle": "No Internet",
+  "@noInternetTitle": {},
+
+  "noInternetBody": "Please check your connection and try again.",
+  "@noInternetBody": {},
+
+  "emptyStateTitle": "Nothing here yet",
+  "@emptyStateTitle": {},
+
+  "emptyStateBody": "Check back later for updates.",
+  "@emptyStateBody": {},
+
+  "save": "Save",
+  "@save": {},
+
+  "cancel": "Cancel",
+  "@cancel": {},
+
+  "delete": "Delete",
+  "@delete": {},
+
+  "edit": "Edit",
+  "@edit": {},
+
+  "submit": "Submit",
+  "@submit": {},
+
+  "confirm": "Confirm",
+  "@confirm": {},
+
+  "yes": "Yes",
+  "@yes": {},
+
+  "no": "No",
+  "@no": {},
+
+  "ok": "OK",
+  "@ok": {},
+
+  "close": "Close",
+  "@close": {},
+
+  "back": "Back",
+  "@back": {},
+
+  "logoutTitle": "Log Out",
+  "@logoutTitle": {},
+
+  "logoutBody": "Are you sure you want to log out?",
+  "@logoutBody": {},
+
+  "bookingSuccess": "Booking confirmed!",
+  "@bookingSuccess": {},
+
+  "bookingFailed": "Booking failed. Please try again.",
+  "@bookingFailed": {},
+
+  "rating": "Rating",
+  "@rating": {},
+
+  "reviews_count": "{count, plural, =1{1 review} other{{count} reviews}}",
+  "@reviews_count": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "availableNow": "Available Now",
+  "@availableNow": {},
+
+  "unavailable": "Unavailable",
+  "@unavailable": {},
+
+  "pricePerHour": "Rs. {price}/hr",
+  "@pricePerHour": {
+    "placeholders": {
+      "price": { "type": "String" }
+    }
+  },
+
+  "kmAway": "{km} km away",
+  "@kmAway": {
+    "placeholders": {
+      "km": { "type": "String" }
+    }
+  }
+}

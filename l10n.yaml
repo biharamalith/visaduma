@@ -1,0 +1,8 @@
+# Flutter localization configuration.
+# This file tells the code generator where to find the .arb files
+# and what Dart class to generate.
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+nullable-getter: false

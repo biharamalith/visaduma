@@ -1,0 +1,89 @@
+name: visaduma
+description: "VisaDuma — Sri Lanka's all-in-one super service platform."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # ── State Management ──────────────────────────────────────────────────────
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+
+  # ── Navigation ────────────────────────────────────────────────────────────
+  go_router: ^13.2.0
+
+  # ── Networking ────────────────────────────────────────────────────────────
+  dio: ^5.4.3+1
+
+  # ── Serialization ─────────────────────────────────────────────────────────
+  json_annotation: ^4.9.0
+  freezed_annotation: ^2.4.1
+
+  # ── Local Storage ─────────────────────────────────────────────────────────
+  shared_preferences: ^2.2.3
+
+  # ── Localization ──────────────────────────────────────────────────────────
+  intl: ^0.20.2
+
+  # ── UI & Fonts ────────────────────────────────────────────────────────────
+  google_fonts: ^6.2.1
+  cached_network_image: ^3.3.1
+  flutter_svg: ^2.0.10+1
+  shimmer: ^3.0.0
+  cupertino_icons: ^1.0.8
+
+  # ── Media & Permissions ───────────────────────────────────────────────────
+  image_picker: ^1.1.2
+  permission_handler: ^11.3.1
+
+  # ── Connectivity ──────────────────────────────────────────────────────────
+  connectivity_plus: ^6.0.3
+
+  # ── Real-Time Chat ────────────────────────────────────────────────────────
+  socket_io_client: ^2.0.3+1
+
+  # ── Push Notifications ────────────────────────────────────────────────────
+  flutter_local_notifications: ^17.2.1+2
+
+  # ── Functional Programming ────────────────────────────────────────────────
+  dartz: ^0.10.1
+  equatable: ^2.0.5
+
+  # ── Icons ─────────────────────────────────────────────────────────────────
+  flutter_launcher_icons: ^0.13.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+  # ── Code Generation ───────────────────────────────────────────────────────
+  build_runner: ^2.4.9
+  json_serializable: ^6.8.0
+  freezed: ^2.5.2
+  riverpod_generator: ^2.4.0
+  custom_lint: ^0.6.4
+  riverpod_lint: ^2.3.10
+  equatable: ^2.0.7
+
+flutter:
+  uses-material-design: true
+
+  # ── Assets ────────────────────────────────────────────────────────────────
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/animations/
+    - assets/fonts/
+
+  # ── Localization ──────────────────────────────────────────────────────────
+  # ARB files are placed in lib/l10n/
+  generate: true

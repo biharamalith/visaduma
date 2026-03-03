@@ -1,0 +1,82 @@
+{
+  "@@locale": "si",
+  "@@last_modified": "2026-03-02",
+
+  "appName": "VisaDuma",
+  "appTagline": "ශ්‍රී ලංකාවේ සුපිරි සේවා යෙදුම",
+
+  "selectLanguage": "ඔබගේ භාෂාව තෝරන්න",
+  "selectLanguageSubtitle": "ඔබට වඩාත් සුවිධායක භාෂාව තෝරාගන්න",
+
+  "continueButton": "ඉදිරියට",
+
+  "english": "English",
+  "sinhala": "සිංහල",
+  "tamil": "தமிழ்",
+
+  "getStarted": "ආරම්භ කරන්න",
+  "login": "පිවිසෙන්න",
+  "register": "ලියාපදිංචි වන්න",
+  "email": "විද්‍යුත් තැපෑල",
+  "password": "මුරපදය",
+  "confirmPassword": "මුරපදය තහවුරු කරන්න",
+  "fullName": "සම්පූර්ණ නම",
+  "phoneNumber": "දුරකථන අංකය",
+  "forgotPassword": "මුරපදය අමතකද?",
+  "dontHaveAccount": "ගිණුමක් නොමැතිද?",
+  "alreadyHaveAccount": "දැනටමත් ගිණුමක් තිබේද?",
+
+  "home": "මුල් පිටුව",
+  "services": "සේවාවන්",
+  "bookings": "වෙන් කිරීම්",
+  "profile": "පැතිකඩ",
+  "notifications": "දැනුම්දීම්",
+  "chat": "කතාබස",
+  "rides": "ගමනාගමන",
+  "shops": "වෙළඳසැල්",
+  "vehicles": "වාහන",
+  "jobs": "රැකිරියා",
+  "boarding": "නේවාසිකාගාර",
+  "reviews": "සමාලෝචන",
+
+  "searchServices": "සේවාවන් සොයන්න…",
+  "searchShops": "වෙළඳසැල් සොයන්න…",
+  "allCategories": "සියලු වර්ග",
+  "nearbyProviders": "ආසන්නතම සපයන්නන්",
+  "topRated": "ඉහළ ශ්‍රේණිගත",
+  "bookNow": "දැන් වෙන් කරන්න",
+  "viewAll": "සියල්ල බලන්න",
+  "loading": "පූරණය වෙමින්…",
+  "error": "කිසියම් දෝෂයක් ඇත",
+  "retry": "නැවත උත්සාහ කරන්න",
+  "noInternetTitle": "අන්තර්ජාල සම්බන්ධතාවය නැත",
+  "noInternetBody": "ඔබගේ සම්බන්ධතාව පරීක්ෂා කර නැවත උත්සාහ කරන්න.",
+  "emptyStateTitle": "තවමත් කිසිවක් නැත",
+  "emptyStateBody": "පසුව නැවත පරීක්ෂා කරන්න.",
+
+  "save": "සුරකින්න",
+  "cancel": "අවලංගු කරන්න",
+  "delete": "මකන්න",
+  "edit": "සංස්කරණය",
+  "submit": "ඉදිරිපත් කරන්න",
+  "confirm": "තහවුරු කරන්න",
+  "yes": "ඔව්",
+  "no": "නැත",
+  "ok": "හරි",
+  "close": "වසන්න",
+  "back": "ආපසු",
+
+  "logoutTitle": "ඉවත් වන්න",
+  "logoutBody": "ඔබට සැබවින්ම ඉවත් වීමට අවශ්‍යද?",
+
+  "bookingSuccess": "වෙන්කිරීම සාර්ථකයි!",
+  "bookingFailed": "වෙන්කිරීම අසාර්ථකයි. නැවත උත්සාහ කරන්න.",
+
+  "rating": "ශ්‍රේණිය",
+  "reviews_count": "{count, plural, =1{සමාලෝචනය 1} other{සමාලෝචන {count}}}",
+
+  "availableNow": "දැන් ලබාගත හැකිය",
+  "unavailable": "නොතිබේ",
+  "pricePerHour": "රු. {price}/පැ",
+  "kmAway": "{km} km දුරින්"
+}
