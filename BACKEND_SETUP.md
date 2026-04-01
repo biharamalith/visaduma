@@ -1,11 +1,11 @@
 # VisaDuma — Backend Setup Guide
-> Node.js + Express + MySQL → wired to the Flutter app
+> Node.js + Express + PostgreSQL + PostGIS → wired to the Flutter app
 
 ---
 
 ## Table of Contents
 1. [Install Required Tools](#1-install-required-tools)
-2. [Create the MySQL Database](#2-create-the-mysql-database)
+2. [Create the PostgreSQL Database](#2-create-the-postgresql-database)
 3. [Create the Node.js Server](#3-create-the-nodejs-server)
 4. [Project File Structure](#4-project-file-structure)
 5. [Full Server Code](#5-full-server-code)
@@ -27,50 +27,84 @@ node -v   # e.g. v20.x.x
 npm -v    # e.g. 10.x.x
 ```
 
-### MySQL
-Download **MySQL Community Server** from https://dev.mysql.com/downloads/mysql/
+### PostgreSQL
+Download **PostgreSQL** from https://www.postgresql.org/download/
 
 During install:
-- Set root password (remember this — you'll need it)
-- Choose "Developer Default" setup type
+- Set postgres user password (remember this — you'll need it)
+- Default port is 5432
+- Install Stack Builder for additional tools
 
-Optionally install **MySQL Workbench** (GUI tool) from the same page.
+Optionally install **pgAdmin** (GUI tool) which comes bundled with PostgreSQL installer.
 
 ---
 
-## 2. Create the MySQL Database
+## 2. Create the PostgreSQL Database
 
-Open MySQL Workbench or run `mysql -u root -p` in terminal, then run:
+Open pgAdmin or run `psql -U postgres` in terminal, then run:
 
 ```sql
 -- Create the database
-CREATE DATABASE visaduma CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE visaduma WITH ENCODING 'UTF8';
 
-USE visaduma;
+-- Connect to the database
+\c visaduma
+
+-- Enable PostGIS extension for geospatial features
+CREATE EXTENSION IF NOT EXISTS postgis;
+
+-- Enable UUID generation
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- Create user role type
+CREATE TYPE user_role AS ENUM ('user', 'provider', 'shop_owner', 'admin');
 
 -- Users table
 CREATE TABLE users (
-  id            VARCHAR(36)  PRIMARY KEY DEFAULT (UUID()),
+  id            UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
   full_name     VARCHAR(100) NOT NULL,
   email         VARCHAR(150) NOT NULL UNIQUE,
   phone         VARCHAR(20)  NOT NULL DEFAULT '',
   password_hash VARCHAR(255) NOT NULL,
-  role          ENUM('user','provider','shop_owner','admin') NOT NULL DEFAULT 'user',
+  role          user_role    NOT NULL DEFAULT 'user',
   avatar_url    VARCHAR(500) NULL,
-  is_verified   TINYINT(1)   NOT NULL DEFAULT 0,
-  created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  is_verified   BOOLEAN      NOT NULL DEFAULT FALSE,
+  created_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Create index on email and phone
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_phone ON users(phone);
 
 -- Refresh tokens table (for JWT rotation)
 CREATE TABLE refresh_tokens (
-  id         INT          PRIMARY KEY AUTO_INCREMENT,
-  user_id    VARCHAR(36)  NOT NULL,
+  id         SERIAL       PRIMARY KEY,
+  user_id    UUID         NOT NULL,
   token      VARCHAR(512) NOT NULL UNIQUE,
-  expires_at DATETIME     NOT NULL,
-  created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  expires_at TIMESTAMP    NOT NULL,
+  created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+-- Create indexes
+CREATE INDEX idx_refresh_tokens_user_id ON refresh_tokens(user_id);
+CREATE INDEX idx_refresh_tokens_token ON refresh_tokens(token);
+
+-- Function to update updated_at timestamp
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = CURRENT_TIMESTAMP;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger to auto-update updated_at
+CREATE TRIGGER update_users_updated_at
+  BEFORE UPDATE ON users
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
 
 -- Insert a test user (password = 123456)
 INSERT INTO users (full_name, email, phone, password_hash, role, is_verified)
@@ -80,7 +114,7 @@ VALUES (
   '0712345678',
   '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', -- bcrypt of "123456"
   'user',
-  1
+  TRUE
 );
 ```
 
@@ -97,7 +131,7 @@ cd visaduma-backend
 npm init -y
 
 # Install dependencies
-npm install express mysql2 bcryptjs jsonwebtoken cors dotenv uuid
+npm install express pg bcryptjs jsonwebtoken cors dotenv
 
 # Install dev dependencies
 npm install --save-dev nodemon
@@ -112,7 +146,7 @@ visaduma-backend/
 ├── .env
 ├── package.json
 ├── server.js            ← entry point
-├── db.js                ← MySQL connection pool
+├── db.js                ← PostgreSQL connection pool
 ├── middleware/
 │   └── auth.js          ← JWT verification middleware
 └── routes/
@@ -127,8 +161,9 @@ visaduma-backend/
 ```env
 PORT=3000
 DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your_mysql_root_password_here
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=your_postgres_password_here
 DB_NAME=visaduma
 JWT_SECRET=super_secret_key_change_this_in_production
 JWT_EXPIRES_IN=15m
@@ -139,16 +174,29 @@ JWT_REFRESH_EXPIRES_IN=7d
 
 ### `db.js`
 ```js
-const mysql = require('mysql2/promise');
+const { Pool } = require('pg');
 require('dotenv').config();
 
-const pool = mysql.createPool({
+const pool = new Pool({
   host:     process.env.DB_HOST,
+  port:     process.env.DB_PORT || 5432,
   user:     process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  waitForConnections: true,
-  connectionLimit: 10,
+  max:      20,  // maximum number of clients in the pool
+  min:      5,   // minimum number of clients in the pool
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
+
+// Test connection
+pool.on('connect', () => {
+  console.log('✅ Connected to PostgreSQL database');
+});
+
+pool.on('error', (err) => {
+  console.error('❌ Unexpected error on idle client', err);
+  process.exit(-1);
 });
 
 module.exports = pool;
@@ -182,7 +230,6 @@ module.exports = function requireAuth(req, res, next) {
 const express  = require('express');
 const bcrypt   = require('bcryptjs');
 const jwt      = require('jsonwebtoken');
-const { v4: uuidv4 } = require('uuid');
 const db       = require('../db');
 const requireAuth = require('../middleware/auth');
 
@@ -214,8 +261,8 @@ function signAccessToken(userId) {
 
 async function saveRefreshToken(userId, token) {
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-  await db.execute(
-    'INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES (?, ?, ?)',
+  await db.query(
+    'INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)',
     [userId, token, expiresAt]
   );
 }
@@ -228,21 +275,18 @@ router.post('/register', async (req, res) => {
     return res.status(422).json({ success: false, message: 'full_name, email and password are required.' });
   }
 
-  const [existing] = await db.execute('SELECT id FROM users WHERE email = ?', [email]);
-  if (existing.length > 0) {
+  const existing = await db.query('SELECT id FROM users WHERE email = $1', [email]);
+  if (existing.rows.length > 0) {
     return res.status(422).json({ success: false, message: 'Email already in use.' });
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
-  const id = uuidv4();
 
-  await db.execute(
-    'INSERT INTO users (id, full_name, email, phone, password_hash, role) VALUES (?, ?, ?, ?, ?, ?)',
-    [id, full_name, email, phone || '', passwordHash, role || 'user']
+  const result = await db.query(
+    'INSERT INTO users (full_name, email, phone, password_hash, role) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+    [full_name, email, phone || '', passwordHash, role || 'user']
   );
-
-  const [rows] = await db.execute('SELECT * FROM users WHERE id = ?', [id]);
-  const user = rows[0];
+  const user = result.rows[0];
 
   const accessToken  = signAccessToken(user.id);
   const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
@@ -268,8 +312,8 @@ router.post('/login', async (req, res) => {
     return res.status(422).json({ success: false, message: 'Email and password are required.' });
   }
 
-  const [rows] = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
-  const user = rows[0];
+  const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+  const user = result.rows[0];
 
   if (!user || !(await bcrypt.compare(password, user.password_hash))) {
     return res.status(401).json({ success: false, message: 'Invalid email or password.' });
@@ -295,7 +339,7 @@ router.post('/login', async (req, res) => {
 router.post('/logout', requireAuth, async (req, res) => {
   const token = req.headers.authorization?.split(' ')[1];
   // Delete all refresh tokens for this user (or just the specific one)
-  await db.execute('DELETE FROM refresh_tokens WHERE user_id = ?', [req.user.id]);
+  await db.query('DELETE FROM refresh_tokens WHERE user_id = $1', [req.user.id]);
   return res.json({ success: true, message: 'Logged out.' });
 });
 
@@ -307,11 +351,11 @@ router.post('/refresh', async (req, res) => {
   }
   try {
     const payload = jwt.verify(refresh_token, process.env.JWT_SECRET);
-    const [rows] = await db.execute(
-      'SELECT * FROM refresh_tokens WHERE user_id = ? AND token = ? AND expires_at > NOW()',
+    const result = await db.query(
+      'SELECT * FROM refresh_tokens WHERE user_id = $1 AND token = $2 AND expires_at > NOW()',
       [payload.id, refresh_token]
     );
-    if (rows.length === 0) {
+    if (result.rows.length === 0) {
       return res.status(401).json({ success: false, message: 'Invalid or expired refresh token.' });
     }
     const newAccess = signAccessToken(payload.id);
@@ -323,11 +367,11 @@ router.post('/refresh', async (req, res) => {
 
 // ── GET /api/v1/auth/me ────────────────────────────────────
 router.get('/me', requireAuth, async (req, res) => {
-  const [rows] = await db.execute('SELECT * FROM users WHERE id = ?', [req.user.id]);
-  if (rows.length === 0) {
+  const result = await db.query('SELECT * FROM users WHERE id = $1', [req.user.id]);
+  if (result.rows.length === 0) {
     return res.status(404).json({ success: false, message: 'User not found.' });
   }
-  return res.json({ success: true, data: { user: formatUser(rows[0]) } });
+  return res.json({ success: true, data: { user: formatUser(result.rows[0]) } });
 });
 
 module.exports = router;
@@ -381,7 +425,7 @@ app.listen(PORT, () => {
 ┌──────────────┐     POST /auth/login         ┌─────────────────┐
 │ Flutter App  │  ──────────────────────────▶  │  Node.js API    │
 │              │   { email, password }         │                 │
-│              │                               │  1. Query MySQL │
+│              │                               │  1. Query PostgreSQL │
 │              │                               │  2. bcrypt.compare(pw, hash) │
 │              │  ◀──────────────────────────  │  3. Sign JWTs   │
 │              │   { data: {                   │                 │
@@ -508,15 +552,15 @@ cd G:\personal-projects\visaduma
 flutter run
 ```
 
-Tap **Log In** with `user@gmail.com` / `123456` — it now hits MySQL and returns a real JWT.
+Tap **Log In** with `user@gmail.com` / `123456` — it now hits PostgreSQL and returns a real JWT.
 
 ---
 
 ## Summary Checklist
 
-- [ ] MySQL installed and `visaduma` database created
+- [ ] PostgreSQL installed and `visaduma` database created with PostGIS extension
 - [ ] `visaduma-backend` folder created with all files above
-- [ ] `.env` filled in with your MySQL root password
+- [ ] `.env` filled in with your PostgreSQL postgres password
 - [ ] `npm run dev` running — no errors in console
 - [ ] `api_endpoints.dart` baseUrl changed to `http://10.0.2.2:3000/api/v1`
 - [ ] Dev bypass block removed from `auth_viewmodel.dart`

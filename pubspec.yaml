@@ -52,6 +52,13 @@ dependencies:
 
   # ── Push Notifications ────────────────────────────────────────────────────
   flutter_local_notifications: ^17.2.1+2
+  firebase_messaging: ^15.1.5
+
+  # ── Maps & Location ───────────────────────────────────────────────────────
+  google_maps_flutter: ^2.9.0
+
+  # ── Secure Storage ────────────────────────────────────────────────────────
+  flutter_secure_storage: ^9.2.2
 
   # ── Functional Programming ────────────────────────────────────────────────
   dartz: ^0.10.1
@@ -72,7 +79,6 @@ dev_dependencies:
   riverpod_generator: ^2.4.0
   custom_lint: ^0.6.4
   riverpod_lint: ^2.3.10
-  equatable: ^2.0.7
 
 flutter:
   uses-material-design: true

@@ -1,11 +1,11 @@
 // ============================================================
 // FILE: lib/features/auth/data/datasources/auth_local_datasource.dart
 // PURPOSE: Manages local storage of auth tokens and user data
-//          via SharedPreferences.
+//          via SecureStorageService.
+//          Validates: Requirements 67.3, 67.4
 // ============================================================
 
-import 'package:shared_preferences/shared_preferences.dart';
-import '../../../../core/constants/app_strings.dart';
+import '../../../../core/storage/secure_storage_service.dart';
 import '../../../../core/errors/exceptions.dart';
 
 abstract class AuthLocalDatasource {
@@ -18,7 +18,10 @@ abstract class AuthLocalDatasource {
 }
 
 class AuthLocalDatasourceImpl implements AuthLocalDatasource {
-  const AuthLocalDatasourceImpl();
+  AuthLocalDatasourceImpl({SecureStorageService? secureStorage})
+      : _secureStorage = secureStorage ?? SecureStorageService();
+
+  final SecureStorageService _secureStorage;
 
   @override
   Future<void> saveTokens({
@@ -26,34 +29,28 @@ class AuthLocalDatasourceImpl implements AuthLocalDatasource {
     required String refreshToken,
   }) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(AppStrings.keyAuthToken, accessToken);
-      await prefs.setString(AppStrings.keyRefreshToken, refreshToken);
-    } catch (_) {
-      throw const CacheException(message: 'Failed to save auth tokens.');
+      await _secureStorage.saveAccessToken(accessToken);
+      await _secureStorage.saveRefreshToken(refreshToken);
+    } catch (e) {
+      throw CacheException(message: 'Failed to save auth tokens: $e');
     }
   }
 
   @override
   Future<String?> getAccessToken() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      return prefs.getString(AppStrings.keyAuthToken);
-    } catch (_) {
-      throw const CacheException(message: 'Failed to read auth token.');
+      return await _secureStorage.getAccessToken();
+    } catch (e) {
+      throw CacheException(message: 'Failed to read auth token: $e');
     }
   }
 
   @override
   Future<void> clearSession() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove(AppStrings.keyAuthToken);
-      await prefs.remove(AppStrings.keyRefreshToken);
-      await prefs.remove(AppStrings.keyUserId);
-      await prefs.remove(AppStrings.keyUserRole);
-    } catch (_) {
-      throw const CacheException(message: 'Failed to clear session.');
+      await _secureStorage.clearAll();
+    } catch (e) {
+      throw CacheException(message: 'Failed to clear session: $e');
     }
   }
 }

@@ -1,11 +1,11 @@
 // ============================================================
 // FILE: lib/features/chat/presentation/viewmodels/chat_viewmodel.dart
 // PURPOSE: Manages socket.io real-time messaging + conversation list.
+//          Validates: Requirements 67.3, 67.4
 // ============================================================
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
-import '../../../../core/constants/app_strings.dart';
-import '../../../../shared/providers/shared_providers.dart';
+import '../../../../core/storage/secure_storage_service.dart';
 import '../../domain/entities/message_entity.dart';
 
 // ── Chat room state ───────────────────────────────────────
@@ -46,8 +46,8 @@ class ChatRoomNotifier extends FamilyNotifier<ChatRoomState, String> {
   }
 
   void _connect() async {
-    final prefs = ref.read(sharedPreferencesProvider);
-    final token = prefs.getString(AppStrings.keyAuthToken);
+    final secureStorage = SecureStorageService();
+    final token = await secureStorage.getAccessToken();
 
     _socket = io.io(
       'http://192.168.1.100:3000',

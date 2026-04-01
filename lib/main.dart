@@ -9,6 +9,7 @@
 //   • AppTheme (Blue & White design system)
 // ============================================================
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -19,6 +20,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'core/router/app_router.dart';
+import 'core/services/notification_service.dart';
 import 'core/theme/app_theme.dart';
 import 'shared/providers/locale_provider.dart';
 import 'shared/providers/shared_providers.dart';
@@ -28,6 +30,9 @@ Future<void> main() async {
 
   // Initialise SharedPreferences before the widget tree is built.
   final prefs = await SharedPreferences.getInstance();
+
+  // Initialize Firebase and notification service
+  await _initializeFirebase();
 
   // Lock to portrait mode.
   await SystemChrome.setPreferredOrientations([
@@ -53,6 +58,25 @@ Future<void> main() async {
       child: const VisaDumaApp(),
     ),
   );
+}
+
+/// Initialize Firebase and notification service
+Future<void> _initializeFirebase() async {
+  try {
+    // Note: Firebase initialization requires firebase_core package
+    // and Firebase configuration files (google-services.json for Android,
+    // GoogleService-Info.plist for iOS). See FIREBASE_SETUP.md for details.
+    
+    // Initialize Firebase (uncomment after adding firebase_core and config files)
+    // await Firebase.initializeApp(
+    //   options: DefaultFirebaseOptions.currentPlatform,
+    // );
+
+    // Initialize notification service
+    await NotificationService.instance.initialize();
+  } catch (e) {
+    debugPrint('Error initializing Firebase: $e');
+  }
 }
 
 /// Root application widget.

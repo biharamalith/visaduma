@@ -1,0 +1,2 @@
+# Storage Layer
+This folder contains local storage utilities (SharedPreferences, Hive, etc.).

@@ -51,6 +51,21 @@ class ForbiddenException extends AppException {
   const ForbiddenException({super.message = 'You do not have permission to access this.'});
 }
 
+/// Thrown on 404 Not Found responses.
+class NotFoundException extends AppException {
+  const NotFoundException({super.message = 'Resource not found.'});
+}
+
+/// Thrown on 400 Bad Request responses (validation errors).
+class ValidationException extends AppException {
+  const ValidationException({super.message = 'Invalid data provided.'});
+}
+
+/// Thrown on 409 Conflict responses.
+class ConflictException extends AppException {
+  const ConflictException({super.message = 'Resource conflict detected.'});
+}
+
 // ── Cache exceptions ──────────────────────────────────────
 
 /// Thrown when SharedPreferences read/write fails.

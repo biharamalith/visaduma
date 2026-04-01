@@ -1,0 +1,2 @@
+# Notifications Domain Layer
+This folder contains entities, repository interfaces, and use cases for push notifications.

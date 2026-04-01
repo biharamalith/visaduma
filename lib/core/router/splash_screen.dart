@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_strings.dart';
 import '../constants/app_text_styles.dart';
+import '../storage/secure_storage_service.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -47,11 +48,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     final prefs = await SharedPreferences.getInstance();
     final hasLanguage = prefs.containsKey(AppStrings.keyLanguageCode);
-    final hasToken = prefs.containsKey(AppStrings.keyAuthToken);
+    
+    // Check for session using secure storage
+    final secureStorage = SecureStorageService();
+    final hasSession = await secureStorage.hasSession();
 
     if (!hasLanguage) {
       context.go('/language');
-    } else if (!hasToken) {
+    } else if (!hasSession) {
       context.go('/login');
     } else {
       context.go('/home');

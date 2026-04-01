@@ -4,8 +4,10 @@
 //          Builds a pre-configured Dio instance with:
 //          - base URL from ApiEndpoints
 //          - timeouts
-//          - ApiInterceptor (JWT inject + token refresh)
-//          - LogInterceptor in debug mode
+//          - AuthInterceptor (JWT injection)
+//          - RefreshTokenInterceptor (automatic token refresh)
+//          - ErrorInterceptor (error handling and conversion)
+//          - LoggingInterceptor (debug logging)
 //
 // Usage:
 //   final dio = DioClient.instance;
@@ -14,7 +16,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'api_endpoints.dart';
-import 'api_interceptor.dart';
+import 'interceptors/auth_interceptor.dart';
+import 'interceptors/error_interceptor.dart';
+import 'interceptors/logging_interceptor.dart';
+import 'interceptors/refresh_token_interceptor.dart';
 
 class DioClient {
   DioClient._();
@@ -39,23 +44,30 @@ class DioClient {
       ),
     );
 
-    // JWT injection + automatic token refresh.
-    dio.interceptors.add(ApiInterceptor(dio));
+    // Add interceptors in order of execution:
+    
+    // 1. Auth interceptor - injects JWT token into requests
+    dio.interceptors.add(AuthInterceptor());
 
-    // Verbose request / response logging (debug builds only).
+    // 2. Refresh token interceptor - handles 401 errors and token refresh
+    dio.interceptors.add(RefreshTokenInterceptor(dio));
+
+    // 3. Error interceptor - converts errors to domain failures
+    dio.interceptors.add(ErrorInterceptor());
+
+    // 4. Logging interceptor - logs requests/responses (debug only)
     if (kDebugMode) {
       dio.interceptors.add(
-        LogInterceptor(
-          requestBody: true,
-          responseBody: true,
-          requestHeader: false,
-          responseHeader: false,
-          error: true,
-          logPrint: (object) => debugPrint('[Dio] $object'),
-        ),
+        LoggingInterceptor(),
       );
     }
 
     return dio;
   }
+
+  /// Resets the Dio instance (useful for testing or re-configuration)
+  static void reset() {
+    _dio = null;
+  }
 }
+

@@ -50,9 +50,19 @@ class UnauthorizedFailure extends Failure {
   const UnauthorizedFailure({super.message = 'Unauthorised. Please log in again.'});
 }
 
+/// Thrown when authentication credentials are invalid.
+class AuthenticationFailure extends Failure {
+  const AuthenticationFailure({super.message = 'Authentication failed. Please login again.'});
+}
+
 /// Thrown when the user does not have permission to access a resource.
 class ForbiddenFailure extends Failure {
   const ForbiddenFailure({super.message = 'Access denied.'});
+}
+
+/// Thrown when the user does not have permission to perform an action.
+class AuthorizationFailure extends Failure {
+  const AuthorizationFailure({super.message = 'You do not have permission to perform this action.'});
 }
 
 // ── Validation failures ───────────────────────────────────

@@ -1,5 +1,10 @@
-// AUTO-GENERATED – run: flutter pub run build_runner build
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
 part of 'booking_model.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
 
 BookingModel _$BookingModelFromJson(Map<String, dynamic> json) => BookingModel(
       id: json['id'] as String,
@@ -9,7 +14,7 @@ BookingModel _$BookingModelFromJson(Map<String, dynamic> json) => BookingModel(
       providerName: json['providerName'] as String,
       userId: json['userId'] as String,
       scheduledAt: DateTime.parse(json['scheduledAt'] as String),
-      durationHours: json['durationHours'] as int,
+      durationHours: (json['durationHours'] as num).toInt(),
       totalPrice: (json['totalPrice'] as num).toDouble(),
       status: json['status'] as String,
       notes: json['notes'] as String?,

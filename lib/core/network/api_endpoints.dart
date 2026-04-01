@@ -7,9 +7,20 @@
 
 abstract final class ApiEndpoints {
   // ── Base URL ──────────────────────────────────────────────
-  /// Development: XAMPP local server.
-  static const String baseUrl = 'http://192.168.1.100:3000/api/v1';
-  // TODO(team): Replace with production URL before release.
+  /// Base URL for API requests.
+  /// TODO: Use environment variables or flutter_dotenv for configuration
+  /// Development: Local backend server
+  static const String baseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'http://localhost:3000/api/v1',
+  );
+  
+  // Alternative base URLs for different environments
+  // Development: XAMPP local server
+  // static const String baseUrlDev = 'http://192.168.1.100:3000/api/v1';
+  // Staging
+  // static const String baseUrlStaging = 'https://staging-api.visaduma.lk/v1';
+  // Production
   // static const String baseUrlProd = 'https://api.visaduma.lk/v1';
 
   // ── Connection timeouts ───────────────────────────────────
